@@ -1,4 +1,5 @@
 import random
+import re
 
 
 def who_is_first(answer):
@@ -66,6 +67,30 @@ def winning_cheker(field):
         return False
 
 
+def user_input_checker(user_data):
+    free_cells = [key for key in field.keys() if field[key] == '-']
+    user_data = tuple(map(int, user_data.split()))
+    if user_data in free_cells:
+        return True
+    else:
+        return False
+
+
+def user_move():
+    '''Функция контролирующая ход пользователя'''
+
+    user_data = input('\nВведите адрес поля для совершения хода: сначала номер столбца, пробел, затем номер строки: ')
+    while not (re.match(r'\d\s\d', user_data) and len(user_data) == 3) or not user_input_checker(user_data):
+        print('\nОшибка ввода или поле уже занято!')
+        user_data = input(
+            'Введите адрес поля для совершения хода: сначала номер столбца, пробел, затем номер строки: ')
+    user_data = tuple(map(int, user_data.split()))
+    if priority:
+        field[user_data] = 'x'
+    else:
+        field[user_data] = 'o'
+
+
 priority = None
 user_xo = None
 pc_xo = None
@@ -81,10 +106,7 @@ if who_is_first(answer):
     for _ in range(4):
         if priority:
             field_creator(field)
-            user_move = input(
-                '\nВведите адрес поля для совершения хода: сначала номер столбца, пробел, затем номер строки: ').split()
-            user_move = tuple(map(int, user_move))
-            field[user_move] = 'x'
+            user_move()
             if winning_cheker(field):
                 winner = True
                 print('Вы выиграли.')
@@ -103,10 +125,7 @@ if who_is_first(answer):
                 print('Вы проиграли.')
                 break
             field_creator(field)
-            user_move = tuple(input(
-                '\nВведите адрес поля для совершения хода: сначала номер столбца, пробел, затем номер строки: ').split())
-            user_move = tuple(map(int, user_move))
-            field[user_move] = 'o'
+            user_move()
             if winning_cheker(field):
                 winner = True
                 print('Вы выиграли.')
@@ -119,6 +138,6 @@ if who_is_first(answer):
         elif winning_cheker(field) and user_xo != 'x':
             print('Вы проиграли.')
         else:
-            print('Ничья!')
+            print('\nНичья!')
 field_creator(field)
 print('\nИгра завершена')
